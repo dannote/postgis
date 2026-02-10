@@ -45,8 +45,7 @@
 
 #include "../deps/mlt/lwgeom_mlt.h"
 
-typedef struct mlt_column_cache
-{
+typedef struct mlt_column_cache {
 	uint32_t *column_oid;
 	char **column_names;
 	Datum *values;
@@ -54,8 +53,7 @@ typedef struct mlt_column_cache
 	TupleDesc tupdesc;
 } mlt_column_cache;
 
-typedef struct mlt_pg_context
-{
+typedef struct mlt_pg_context {
 	MemoryContext trans_context;
 	char *name;
 	uint32_t extent;

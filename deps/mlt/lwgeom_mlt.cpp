@@ -47,12 +47,14 @@ struct mlt_agg_context {
  * Mirrors the MVT pattern but targets the MLT Geometry struct.
  * ---------------------------------------------------------------- */
 
-static Vertex vertex_from_point2d(const POINT2D *p)
+static Vertex
+vertex_from_point2d(const POINT2D *p)
 {
 	return {static_cast<int32_t>(p->x), static_cast<int32_t>(p->y)};
 }
 
-static std::vector<Vertex> vertices_from_pa(const POINTARRAY *pa)
+static std::vector<Vertex>
+vertices_from_pa(const POINTARRAY *pa)
 {
 	std::vector<Vertex> verts;
 	verts.reserve(pa->npoints);
@@ -61,7 +63,8 @@ static std::vector<Vertex> vertices_from_pa(const POINTARRAY *pa)
 	return verts;
 }
 
-static mlt::Encoder::Geometry convert_point(const LWPOINT *point)
+static mlt::Encoder::Geometry
+convert_point(const LWPOINT *point)
 {
 	mlt::Encoder::Geometry g;
 	g.type = GeometryType::POINT;
@@ -69,7 +72,8 @@ static mlt::Encoder::Geometry convert_point(const LWPOINT *point)
 	return g;
 }
 
-static mlt::Encoder::Geometry convert_mpoint(const LWMPOINT *mpoint)
+static mlt::Encoder::Geometry
+convert_mpoint(const LWMPOINT *mpoint)
 {
 	mlt::Encoder::Geometry g;
 	g.type = GeometryType::MULTIPOINT;
@@ -78,7 +82,8 @@ static mlt::Encoder::Geometry convert_mpoint(const LWMPOINT *mpoint)
 	return g;
 }
 
-static mlt::Encoder::Geometry convert_line(const LWLINE *line)
+static mlt::Encoder::Geometry
+convert_line(const LWLINE *line)
 {
 	mlt::Encoder::Geometry g;
 	g.type = GeometryType::LINESTRING;
@@ -86,7 +91,8 @@ static mlt::Encoder::Geometry convert_line(const LWLINE *line)
 	return g;
 }
 
-static mlt::Encoder::Geometry convert_mline(const LWMLINE *mline)
+static mlt::Encoder::Geometry
+convert_mline(const LWMLINE *mline)
 {
 	mlt::Encoder::Geometry g;
 	g.type = GeometryType::MULTILINESTRING;
@@ -95,7 +101,8 @@ static mlt::Encoder::Geometry convert_mline(const LWMLINE *mline)
 	return g;
 }
 
-static mlt::Encoder::Geometry convert_poly(const LWPOLY *poly)
+static mlt::Encoder::Geometry
+convert_poly(const LWPOLY *poly)
 {
 	mlt::Encoder::Geometry g;
 	g.type = GeometryType::POLYGON;
@@ -108,7 +115,8 @@ static mlt::Encoder::Geometry convert_poly(const LWPOLY *poly)
 	return g;
 }
 
-static mlt::Encoder::Geometry convert_mpoly(const LWMPOLY *mpoly)
+static mlt::Encoder::Geometry
+convert_mpoly(const LWMPOLY *mpoly)
 {
 	mlt::Encoder::Geometry g;
 	g.type = GeometryType::MULTIPOLYGON;
@@ -129,7 +137,8 @@ static mlt::Encoder::Geometry convert_mpoly(const LWMPOLY *mpoly)
 	return g;
 }
 
-static mlt::Encoder::Geometry convert_lwgeom(const LWGEOM *lwgeom)
+static mlt::Encoder::Geometry
+convert_lwgeom(const LWGEOM *lwgeom)
 {
 	switch (lwgeom->type)
 	{
@@ -175,10 +184,10 @@ mlt_agg_destroy(mlt_agg_context *ctx)
 
 void
 mlt_agg_add_feature(mlt_agg_context *ctx,
-                     uint64_t id,
-                     const LWGEOM *lwgeom,
-                     const mlt_property *properties,
-                     uint32_t n_properties)
+		    uint64_t id,
+		    const LWGEOM *lwgeom,
+		    const mlt_property *properties,
+		    uint32_t n_properties)
 {
 	Feature f;
 	f.id = id;
@@ -274,8 +283,8 @@ mlt_agg_combine(mlt_agg_context *ctx1, mlt_agg_context *ctx2)
 		return ctx1;
 
 	ctx1->features.insert(ctx1->features.end(),
-	                       std::make_move_iterator(ctx2->features.begin()),
-	                       std::make_move_iterator(ctx2->features.end()));
+			      std::make_move_iterator(ctx2->features.begin()),
+			      std::make_move_iterator(ctx2->features.end()));
 	delete ctx2;
 	return ctx1;
 }

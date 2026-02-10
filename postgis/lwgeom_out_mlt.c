@@ -34,7 +34,8 @@
  * Process input parameters and row data into state
  */
 PG_FUNCTION_INFO_V1(pgis_asmlt_transfn);
-Datum pgis_asmlt_transfn(PG_FUNCTION_ARGS)
+Datum
+pgis_asmlt_transfn(PG_FUNCTION_ARGS)
 {
 #ifndef HAVE_LIBMLT
 	elog(ERROR, "ST_AsMLT: compiled without MLT support");
@@ -95,7 +96,8 @@ Datum pgis_asmlt_transfn(PG_FUNCTION_ARGS)
  * Encode final state to MapLibre Tile
  */
 PG_FUNCTION_INFO_V1(pgis_asmlt_finalfn);
-Datum pgis_asmlt_finalfn(PG_FUNCTION_ARGS)
+Datum
+pgis_asmlt_finalfn(PG_FUNCTION_ARGS)
 {
 #ifndef HAVE_LIBMLT
 	elog(ERROR, "ST_AsMLT: compiled without MLT support");
@@ -128,7 +130,8 @@ Datum pgis_asmlt_finalfn(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(pgis_asmlt_combinefn);
-Datum pgis_asmlt_combinefn(PG_FUNCTION_ARGS)
+Datum
+pgis_asmlt_combinefn(PG_FUNCTION_ARGS)
 {
 #ifndef HAVE_LIBMLT
 	elog(ERROR, "ST_AsMLT: compiled without MLT support");

@@ -78,9 +78,7 @@ parse_column_keys(mlt_pg_context *ctx)
 			}
 		}
 
-		if (ctx->id_name &&
-		    (ctx->id_index == UINT32_MAX) &&
-		    (strcmp(tkey, ctx->id_name) == 0) &&
+		if (ctx->id_name && (ctx->id_index == UINT32_MAX) && (strcmp(tkey, ctx->id_name) == 0) &&
 		    (typoid == INT2OID || typoid == INT4OID || typoid == INT8OID))
 		{
 			ctx->id_index = i;
@@ -141,8 +139,7 @@ mlt_pg_transfn(mlt_pg_context *ctx)
 	ItemPointerSetInvalid(&(tuple.t_self));
 	tuple.t_tableOid = InvalidOid;
 	tuple.t_data = ctx->row;
-	heap_deform_tuple(&tuple, ctx->column_cache.tupdesc,
-	                  ctx->column_cache.values, ctx->column_cache.nulls);
+	heap_deform_tuple(&tuple, ctx->column_cache.tupdesc, ctx->column_cache.values, ctx->column_cache.nulls);
 
 	/* Extract feature ID */
 	if (ctx->id_index != UINT32_MAX && !ctx->column_cache.nulls[ctx->id_index])
@@ -227,8 +224,7 @@ mlt_pg_transfn(mlt_pg_context *ctx)
 			props[n_props].val.string_val = DatumGetCString(val);
 			n_props++;
 			break;
-		default:
-		{
+		default: {
 			/* Fall back: render as string */
 			Oid foutoid;
 			bool typisvarlena;

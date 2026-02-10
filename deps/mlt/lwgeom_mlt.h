@@ -43,7 +43,8 @@ typedef struct mlt_agg_context mlt_agg_context;
  * Property value that can be passed from the PostgreSQL aggregate
  * into the encoder without exposing any C++ types.
  */
-enum mlt_prop_type {
+enum mlt_prop_type
+{
 	MLT_PROP_BOOL,
 	MLT_PROP_INT32,
 	MLT_PROP_INT64,
@@ -69,10 +70,10 @@ mlt_agg_context *mlt_agg_create(const char *layer_name, uint32_t extent);
 void mlt_agg_destroy(mlt_agg_context *ctx);
 
 void mlt_agg_add_feature(mlt_agg_context *ctx,
-                         uint64_t id,
-                         const LWGEOM *lwgeom,
-                         const mlt_property *properties,
-                         uint32_t n_properties);
+			 uint64_t id,
+			 const LWGEOM *lwgeom,
+			 const mlt_property *properties,
+			 uint32_t n_properties);
 
 /*
  * Encode accumulated features into an MLT binary blob.
