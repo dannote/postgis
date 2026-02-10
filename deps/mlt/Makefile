@@ -37,7 +37,7 @@ CXXFLAGS = -std=c++20 \
 	-I$(srcdir)/vendor/mlt-vendor/fastpfor/headers \
 	-I$(srcdir)/vendor/mlt-vendor/earcut/include \
 	-I$(srcdir)/vendor/mlt-vendor/simde \
-	 -I/opt/homebrew/Cellar/geos/3.14.1/include -I/opt/homebrew/Cellar/proj/9.7.0/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/zstd/include -I/opt/homebrew/Cellar/xz/5.8.2/include -I/opt/homebrew/opt/jpeg-turbo/include -I/opt/homebrew/Cellar/protobuf-c/1.5.2_10/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -I/opt/homebrew/Cellar/sfcgal/2.2.0_1/include -I/opt/homebrew/Cellar/json-c/0.18/include -I/opt/homebrew/Cellar/json-c/0.18/include/json-c -I/opt/homebrew/Cellar/pcre2/10.47/include -DNDEBUG    -fno-common -DPIC \
+	 -I/opt/homebrew/Cellar/geos/3.14.1/include -I/opt/homebrew/Cellar/proj/9.7.0/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/zstd/include -I/opt/homebrew/Cellar/xz/5.8.2/include -I/opt/homebrew/opt/jpeg-turbo/include -I/opt/homebrew/Cellar/protobuf-c/1.5.2_10/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -I/opt/homebrew/Cellar/sfcgal/2.2.0_1/include -I/opt/homebrew/Cellar/json-c/0.18/include -I/opt/homebrew/Cellar/json-c/0.18/include/json-c -I/opt/homebrew/Cellar/pcre2/10.47/include -DNDEBUG   -fno-common -DPIC -O3 \
 	-DMLT_ENABLE_FASTPFOR=1 -DSIMDE_ENABLE_NATIVE_ALIASES -w
 LDFLAGS =  -lm
 
