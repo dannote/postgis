@@ -76,7 +76,7 @@ vendor/mlt-vendor/fsst/%.o: vendor/mlt-vendor/fsst/%.cpp
 
 vendor/mlt-vendor/fastpfor/src/%.o: vendor/mlt-vendor/fastpfor/src/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -msse4.1 -c -o $@ $<
 
 ../../liblwgeom/liblwgeom.h:
 	$(MAKE) -C ../../liblwgeom liblwgeom.h
