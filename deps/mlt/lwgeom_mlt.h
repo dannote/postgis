@@ -30,6 +30,7 @@ extern "C" {
 #endif
 
 #include "liblwgeom.h"
+#include "lwgeom_log.h"
 
 /*
  * Opaque handle to the MLT encoder context (C++ internals hidden).

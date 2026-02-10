@@ -22,12 +22,12 @@
 # *
 # **********************************************************************/
 
-top_builddir = @top_builddir@
-top_srcdir = @top_srcdir@
-srcdir = @srcdir@
-libdir = @libdir@
+top_builddir = ../..
+top_srcdir = ../..
+srcdir = .
+libdir = ${exec_prefix}/lib
 
-CXX = @MLT_CXX@
+CXX = clang -std=c++17 -x c++
 CXXFLAGS = -std=c++20 \
 	-I$(top_srcdir)/liblwgeom \
 	-I$(top_builddir)/liblwgeom \
@@ -37,11 +37,11 @@ CXXFLAGS = -std=c++20 \
 	-I$(srcdir)/vendor/mlt-vendor/fastpfor/headers \
 	-I$(srcdir)/vendor/mlt-vendor/earcut/include \
 	-I$(srcdir)/vendor/mlt-vendor/simde \
-	@CPPFLAGS@ @CXXFLAGS@ @PICFLAGS@ \
+	 -I/opt/homebrew/Cellar/geos/3.14.1/include -I/opt/homebrew/Cellar/proj/9.7.0/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/zstd/include -I/opt/homebrew/Cellar/xz/5.8.2/include -I/opt/homebrew/opt/jpeg-turbo/include -I/opt/homebrew/Cellar/protobuf-c/1.5.2_10/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -I/opt/homebrew/Cellar/sfcgal/2.2.0_1/include -I/opt/homebrew/Cellar/json-c/0.18/include -I/opt/homebrew/Cellar/json-c/0.18/include/json-c -I/opt/homebrew/Cellar/pcre2/10.47/include -DNDEBUG    -fno-common -DPIC \
 	-DMLT_ENABLE_FASTPFOR=1 -DSIMDE_ENABLE_NATIVE_ALIASES -w
-LDFLAGS = @LDFLAGS@
+LDFLAGS =  -lm
 
-VPATH = $(srcdir)
+
 
 MLT_OBJS = \
 	lwgeom_mlt.o \
@@ -58,10 +58,10 @@ MLT_OBJS = \
 	vendor/mlt-vendor/fastpfor/src/simdbitpacking.o \
 	vendor/mlt-vendor/fastpfor/src/simdunalignedbitpacking.o
 
-all: @MLT_LIB@
+all: libmlt.la
 
-@MLT_LIB@: $(MLT_OBJS)
-	@AR@ @AR_FLAGS@ @MLT_LIB@ $(MLT_OBJS)
+libmlt.la: $(MLT_OBJS)
+	ar rs libmlt.la $(MLT_OBJS)
 
 lwgeom_mlt.o: lwgeom_mlt.cpp lwgeom_mlt.h ../../liblwgeom/liblwgeom.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -82,7 +82,7 @@ vendor/mlt-vendor/fastpfor/src/%.o: vendor/mlt-vendor/fastpfor/src/%.cpp
 	$(MAKE) -C ../../liblwgeom liblwgeom.h
 
 clean:
-	rm -f @MLT_LIB@ $(MLT_OBJS)
+	rm -f libmlt.la $(MLT_OBJS)
 
 distclean: clean
 	rm -f Makefile
