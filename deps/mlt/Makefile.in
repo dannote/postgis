@@ -1,0 +1,96 @@
+#/**********************************************************************
+# *
+# * PostGIS - Spatial Types for PostgreSQL
+# * http://postgis.net
+# *
+# * PostGIS is free software: you can redistribute it and/or modify
+# * it under the terms of the GNU General Public License as published by
+# * the Free Software Foundation, either version 2 of the License, or
+# * (at your option) any later version.
+# *
+# * PostGIS is distributed in the hope that it will be useful,
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# * GNU General Public License for more details.
+# *
+# * You should have received a copy of the GNU General Public License
+# * along with PostGIS.  If not, see <http://www.gnu.org/licenses/>.
+# *
+# **********************************************************************
+# *
+# * Copyright 2025 Dan Polevoy
+# *
+# **********************************************************************/
+
+top_builddir = @top_builddir@
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+libdir = @libdir@
+
+CXX = @MLT_CXX@
+CXXFLAGS = -std=c++20 \
+	-I$(top_srcdir)/liblwgeom \
+	-I$(top_builddir)/liblwgeom \
+	-I$(srcdir)/vendor/mlt-include \
+	-I$(srcdir)/vendor/mlt-src \
+	-I$(srcdir)/vendor/mlt-vendor/fsst \
+	-I$(srcdir)/vendor/mlt-vendor/fastpfor/headers \
+	-I$(srcdir)/vendor/mlt-vendor/earcut/include \
+	-I$(srcdir)/vendor/mlt-vendor/simde \
+	@CPPFLAGS@ @CXXFLAGS@ @PICFLAGS@ \
+	-DMLT_ENABLE_FASTPFOR=1 -w
+LDFLAGS = @LDFLAGS@
+
+VPATH = $(srcdir)
+
+MLT_OBJS = \
+	lwgeom_mlt.o \
+	vendor/mlt-src/mlt/encoder.o \
+	vendor/mlt-src/mlt/encode/int.o \
+	vendor/mlt-src/mlt/metadata/stream.o \
+	vendor/mlt-src/mlt/metadata/tileset.o \
+	vendor/mlt-vendor/fsst/libfsst.o \
+	vendor/mlt-vendor/fsst/fsst_avx512.o \
+	vendor/mlt-vendor/fastpfor/src/bitpacking.o \
+	vendor/mlt-vendor/fastpfor/src/bitpackingaligned.o \
+	vendor/mlt-vendor/fastpfor/src/bitpackingunaligned.o \
+	vendor/mlt-vendor/fastpfor/src/horizontalbitpacking.o \
+	vendor/mlt-vendor/fastpfor/src/simdbitpacking.o \
+	vendor/mlt-vendor/fastpfor/src/simdunalignedbitpacking.o
+
+all: @MLT_LIB@
+
+@MLT_LIB@: $(MLT_OBJS)
+	@AR@ @AR_FLAGS@ @MLT_LIB@ $(MLT_OBJS)
+
+lwgeom_mlt.o: lwgeom_mlt.cpp lwgeom_mlt.h ../../liblwgeom/liblwgeom.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+vendor/mlt-src/mlt/%.o: vendor/mlt-src/mlt/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+vendor/mlt-vendor/fsst/%.o: vendor/mlt-vendor/fsst/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -std=c++17 -c -o $@ $<
+
+vendor/mlt-vendor/fastpfor/src/%.o: vendor/mlt-vendor/fastpfor/src/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+../../liblwgeom/liblwgeom.h:
+	$(MAKE) -C ../../liblwgeom liblwgeom.h
+
+clean:
+	rm -f @MLT_LIB@ $(MLT_OBJS)
+
+distclean: clean
+	rm -f Makefile
+
+install:
+
+uninstall:
+
+check:
+
+.PHONY: clean distclean install uninstall check

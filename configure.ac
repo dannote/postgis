@@ -1902,6 +1902,62 @@ DEPS_MAKEFILE_LIST="$DEPS_MAKEFILE_LIST
 		deps/flatgeobuf/Makefile"
 
 
+dnl ===========================================================================
+dnl MapLibre Tile (MLT)
+dnl ===========================================================================
+
+MLT_LIB=libmlt.la
+AC_SUBST([MLT_LIB])
+
+CXX_SAVE="$CXX"
+CC_SAVE="$CC"
+CFLAGS_SAVE="$CFLAGS"
+CXXFLAGS_SAVE="$CXXFLAGS"
+CPPFLAGS_SAVE="$CPPFLAGS"
+LDFLAGS_SAVE="$LDFLAGS"
+LIBS_SAVE="$LIBS"
+
+MLT_CXX=`"$PG_CONFIG" --cc`
+CPPFLAGS="-x c++"
+CFLAGS=""
+LDFLAGS=""
+LIBS=""
+CXX="$MLT_CXX"
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX(17, noext, mandatory)
+MLT_CXX="$CXX -x c++"
+
+CC="$MLT_CXX"
+
+AC_CHECK_LIB(c++, main, [HAVE_CPP=yes], [HAVE_CPP=no])
+AC_CHECK_LIB(stdc++, main, [HAVE_STDCPP=yes], [HAVE_STDCPP=no])
+
+if test "x$HAVE_CPP" = "xyes"; then
+	MLT_LDFLAGS="-lc++"
+elif test "x$HAVE_STDCPP" = "xyes"; then
+	MLT_LDFLAGS="-lstdc++"
+else
+	AC_MSG_WARN("Could not find a C++ standard library")
+	MLT_LDFLAGS=""
+fi
+
+CXX="$CXX_SAVE"
+CC="$CC_SAVE"
+CFLAGS="$CFLAGS_SAVE"
+CXXFLAGS="$CXXFLAGS_SAVE"
+CPPFLAGS="$CPPFLAGS_SAVE"
+LDFLAGS="$LDFLAGS_SAVE"
+LIBS="$LIBS_SAVE"
+
+HAVE_MLT=yes
+AC_DEFINE([HAVE_LIBMLT], [1], [Define to 1 if MLT encoder is being built])
+AC_SUBST([HAVE_MLT])
+AC_SUBST([MLT_CXX])
+AC_SUBST([MLT_LDFLAGS])
+
+DEPS_MAKEFILE_LIST="$DEPS_MAKEFILE_LIST
+		deps/mlt/Makefile"
+
 
 dnl ===========================================================================
 dnl See if we have the requirements for building the extensions, namely
@@ -1982,6 +2038,7 @@ if test "x$HAVE_WAGYU" = "xyes"; then
 fi
 if test "x$HAVE_FLATGEOBUF" = "xyes"; then
     AC_MSG_RESULT([  C++ compiler (FlatGeobuf): ${FLATGEOBUF_CXX} ${CXXFLAGS}])
+    AC_MSG_RESULT([  C++ compiler (MLT): ${MLT_CXX} ${CXXFLAGS}])
 fi
 AC_MSG_RESULT([  CPPFLAGS:             $CPPFLAGS])
 AC_MSG_RESULT([  LDFLAGS:              $LDFLAGS])

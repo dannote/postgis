@@ -38,6 +38,8 @@
 /* Define to 1 if libprotobuf-c is present */
 #undef HAVE_LIBPROTOBUF
 
+#undef HAVE_LIBMLT
+
 /* Numeric version number for libprotobuf */
 #undef LIBPROTOBUF_VERSION
 

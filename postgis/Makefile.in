@@ -66,6 +66,11 @@ FLATGEOBUF_INCLUDE = -I@top_srcdir@/deps/flatgeobuf
 FLATGEOBUF_LIB = $(FLATGEOBUF_LIBPATH) @FLATGEOBUF_LDFLAGS@
 FLATGEOBUF_DEP = $(FLATGEOBUF_LIBPATH)
 
+MLT_LIBPATH = ../deps/mlt/@MLT_LIB@
+MLT_INCLUDE = -I@top_srcdir@/deps/mlt
+MLT_LIB = $(MLT_LIBPATH) @MLT_LDFLAGS@
+MLT_DEP = $(MLT_LIBPATH)
+
 # SQL preprocessor
 SQLPP = @SQLPP@
 
@@ -131,6 +136,8 @@ PG_OBJS= \
 	flatgeobuf.o \
 	lwgeom_in_flatgeobuf.o \
 	lwgeom_out_flatgeobuf.o \
+	mlt.o \
+	lwgeom_out_mlt.o \
 	lwgeom_remove_irrelevant_points_for_view.o \
 	lwgeom_remove_small_parts.o \
 	postgis_legacy.o
@@ -145,8 +152,8 @@ OBJS=$(PG_OBJS)
 # to an existing liblwgeom.so in the PostgreSQL $libdir supplied by an
 # older version of PostGIS, rather than with the static liblwgeom.a
 # supplied with newer versions of PostGIS
-PG_CPPFLAGS += -I@top_srcdir@/liblwgeom -I@top_builddir@/liblwgeom @CFLAGS@ -I@top_srcdir@/libpgcommon $(FLATGEOBUF_INCLUDE) $(WAYGU_INCLUDE) $(UTHASH_INCLUDE) @CPPFLAGS@ @PICFLAGS@
-SHLIB_LINK_F = $(WAYGU_LIB) $(FLATGEOBUF_LIB) ../libpgcommon/libpgcommon.a ../liblwgeom/.libs/liblwgeom.a @SHLIB_LINK@
+PG_CPPFLAGS += -I@top_srcdir@/liblwgeom -I@top_builddir@/liblwgeom @CFLAGS@ -I@top_srcdir@/libpgcommon $(FLATGEOBUF_INCLUDE) $(WAYGU_INCLUDE) $(UTHASH_INCLUDE) $(MLT_INCLUDE) @CPPFLAGS@ @PICFLAGS@
+SHLIB_LINK_F = $(WAYGU_LIB) $(FLATGEOBUF_LIB) $(MLT_LIB) ../libpgcommon/libpgcommon.a ../liblwgeom/.libs/liblwgeom.a @SHLIB_LINK@
 
 # Extra files to remove during 'make clean'
 EXTRA_CLEAN=$(SQL_OBJS) \
@@ -200,7 +207,7 @@ endif
 # Also they are all dependent on postgis_config.h
 # and thus postgis_revision.h
 #
-$(PG_OBJS): ../liblwgeom/.libs/liblwgeom.a ../libpgcommon/libpgcommon.a ../postgis_config.h ../postgis_revision.h $(WAGYU_DEP) $(FLATGEOBUF_DEP)
+$(PG_OBJS): ../liblwgeom/.libs/liblwgeom.a ../libpgcommon/libpgcommon.a ../postgis_config.h ../postgis_revision.h $(WAGYU_DEP) $(FLATGEOBUF_DEP) $(MLT_DEP)
 
 ../postgis_revision.h:
 	$(MAKE) -C .. postgis_revision.h
@@ -216,6 +223,9 @@ $(WAGYU_LIBPATH):
 
 $(FLATGEOBUF_LIBPATH):
 	$(MAKE) -C ../deps/flatgeobuf all
+
+$(MLT_LIBPATH):
+	$(MAKE) -C ../deps/mlt all
 
 ifeq (@HAVE_PROTOBUF@,yes)
 

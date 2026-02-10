@@ -5256,6 +5256,100 @@ CREATE OR REPLACE FUNCTION ST_AsMVTGeom(geom geometry, bounds box2d, extent inte
 	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
 	_COST_MEDIUM;
 
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_transfn(internal, anyelement)
+	RETURNS internal
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_transfn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_transfn(internal, anyelement, text)
+	RETURNS internal
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_transfn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_transfn(internal, anyelement, text, integer)
+	RETURNS internal
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_transfn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_transfn(internal, anyelement, text, integer, text)
+	RETURNS internal
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_transfn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_transfn(internal, anyelement, text, integer, text, text)
+	RETURNS internal
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_transfn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_finalfn(internal)
+	RETURNS bytea
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_finalfn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE OR REPLACE FUNCTION pgis_asmlt_combinefn(internal, internal)
+	RETURNS internal
+	AS 'MODULE_PATHNAME', 'pgis_asmlt_combinefn'
+	LANGUAGE 'c' IMMUTABLE PARALLEL SAFE
+	_COST_MEDIUM;
+
+-- Availability: 3.6.0
+CREATE AGGREGATE ST_AsMLT(anyelement)
+(
+	sfunc = pgis_asmlt_transfn,
+	stype = internal,
+	finalfunc = pgis_asmlt_finalfn,
+	finalfunc_modify = read_write
+);
+
+-- Availability: 3.6.0
+CREATE AGGREGATE ST_AsMLT(anyelement, text)
+(
+	sfunc = pgis_asmlt_transfn,
+	stype = internal,
+	finalfunc = pgis_asmlt_finalfn,
+	finalfunc_modify = read_write
+);
+
+-- Availability: 3.6.0
+CREATE AGGREGATE ST_AsMLT(anyelement, text, integer)
+(
+	sfunc = pgis_asmlt_transfn,
+	stype = internal,
+	finalfunc = pgis_asmlt_finalfn,
+	finalfunc_modify = read_write
+);
+
+-- Availability: 3.6.0
+CREATE AGGREGATE ST_AsMLT(anyelement, text, integer, text)
+(
+	sfunc = pgis_asmlt_transfn,
+	stype = internal,
+	finalfunc = pgis_asmlt_finalfn,
+	finalfunc_modify = read_write
+);
+
+-- Availability: 3.6.0
+CREATE AGGREGATE ST_AsMLT(anyelement, text, integer, text, text)
+(
+	sfunc = pgis_asmlt_transfn,
+	stype = internal,
+	finalfunc = pgis_asmlt_finalfn,
+	finalfunc_modify = read_write
+);
+
 -- Availability: 2.4.0
 CREATE OR REPLACE FUNCTION postgis_libprotobuf_version()
 	RETURNS text
