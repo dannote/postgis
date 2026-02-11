@@ -18,6 +18,7 @@ HAVE_JSON=@HAVE_JSON@
 HAVE_SPGIST=@HAVE_SPGIST@
 INTERRUPTTESTS=@INTERRUPTTESTS@
 HAVE_PROTOBUF=@HAVE_PROTOBUF@
+HAVE_MLT=@HAVE_MLT@
 
 current_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -146,8 +147,7 @@ TESTS += \
 	$(top_srcdir)/regress/core/point_coordinates \
 	$(top_srcdir)/regress/core/out_geojson \
   $(top_srcdir)/regress/core/wrapx \
-	$(top_srcdir)/regress/core/computed_columns \
-	$(top_srcdir)/regress/core/mlt
+	$(top_srcdir)/regress/core/computed_columns
 
 # Slow slow tests
 TESTS_SLOW = \
@@ -213,4 +213,9 @@ ifeq ($(HAVE_PROTOBUF),yes)
 		$(top_srcdir)/regress/core/mvt \
 		$(top_srcdir)/regress/core/mvt_jsonb \
 		$(top_srcdir)/regress/core/geobuf
+endif
+
+ifeq ($(HAVE_MLT),yes)
+	TESTS += \
+		$(top_srcdir)/regress/core/mlt
 endif
