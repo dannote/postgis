@@ -24,12 +24,17 @@ jobs:
       - name: Install build dependencies
         run: |
           apt-get update
+          apt-get install -y --no-install-recommends ca-certificates curl gnupg
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
+          echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo ${VERSION_CODENAME})-pgdg main" \
+            > /etc/apt/sources.list.d/pgdg.list
+          apt-get update
           apt-get install -y --no-install-recommends \
             build-essential g++ autoconf automake libtool pkg-config \
             libgeos-dev libproj-dev libjson-c-dev libprotobuf-c-dev protobuf-c-compiler \
             libxml2-dev libgdal-dev libsfcgal-dev libpcre2-dev \
             postgresql-server-dev-${{ matrix.pg }} \
-            xsltproc docbook-xsl docbook-mathml perl ca-certificates
+            xsltproc docbook-xsl docbook-mathml perl
 
       - name: Check out
         uses: actions/checkout@v4
