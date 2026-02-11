@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'mlt-*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: "Build postgis-3.so (Ubuntu ${{ matrix.ubuntu }}, PG ${{ matrix.pg }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ubuntu: "24.04"
+            pg: "18"
+    runs-on: ubuntu-latest
+    container:
+      image: "ubuntu:${{ matrix.ubuntu }}"
+    steps:
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential g++ autoconf automake libtool pkg-config \
+            libgeos-dev libproj-dev libjson-c-dev libprotobuf-c-dev protobuf-c-compiler \
+            libxml2-dev libgdal-dev libsfcgal-dev libpcre2-dev \
+            postgresql-server-dev-${{ matrix.pg }} \
+            xsltproc docbook-xsl docbook-mathml perl ca-certificates
+
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure --with-pgconfig=/usr/lib/postgresql/${{ matrix.pg }}/bin/pg_config
+
+      - name: Build liblwgeom
+        run: |
+          perl utils/repo_revision.pl
+          make -C liblwgeom -j$(nproc)
+
+      - name: Build dependencies
+        run: make -C deps -j$(nproc)
+
+      - name: Build libpgcommon
+        run: make -C libpgcommon -j$(nproc)
+
+      - name: Build postgis
+        run: make -C postgis -j$(nproc)
+
+      - name: Verify MLT support
+        run: |
+          grep "MLT support:.*yes" config.log || { echo "MLT not enabled!"; exit 1; }
+          nm -gD postgis/postgis-3.so | grep pgis_asmlt_transfn
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          cp postgis/postgis-3.so dist/
+          cp postgis/postgis.sql dist/
+          cd dist && tar czf ../postgis-3-mlt-ubuntu${{ matrix.ubuntu }}-pg${{ matrix.pg }}-amd64.tar.gz .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgis-3-mlt-ubuntu${{ matrix.ubuntu }}-pg${{ matrix.pg }}-amd64
+          path: postgis-3-mlt-ubuntu${{ matrix.ubuntu }}-pg${{ matrix.pg }}-amd64.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "**/*.tar.gz"
+          generate_release_notes: true
