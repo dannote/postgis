@@ -1906,8 +1906,10 @@ dnl ===========================================================================
 dnl MapLibre Tile (MLT)
 dnl ===========================================================================
 
-MLT_LIB=libmlt.la
-AC_SUBST([MLT_LIB])
+HAVE_MLT=no
+MLT_LIB=
+MLT_CXX=
+MLT_LDFLAGS=
 
 CXX_SAVE="$CXX"
 CC_SAVE="$CC"
@@ -1924,21 +1926,50 @@ LDFLAGS=""
 LIBS=""
 CXX="$MLT_CXX"
 AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX(17, noext, mandatory)
-MLT_CXX="$CXX -x c++"
 
-CC="$MLT_CXX"
+dnl Check for C++20 support (required by mlt-cpp for std::bit_cast, structured bindings in lambdas)
+AC_MSG_CHECKING([whether $CXX supports C++20])
+CXXFLAGS="-std=c++20"
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <bit>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+template <class T> constexpr T test_byteswap(T v) {
+    auto r = std::bit_cast<std::array<std::byte, sizeof(T)>>(v);
+    return std::bit_cast<T>(r);
+}
+]], [[
+    auto v = test_byteswap(uint32_t(42));
+    auto [a, b] = std::pair(1, 2);
+    auto fn = [&]() { return a + b; };
+]])],
+[HAVE_CXX20=yes],
+[HAVE_CXX20=no])
+AC_LANG_POP([C++])
+AC_MSG_RESULT([$HAVE_CXX20])
 
-AC_CHECK_LIB(c++, main, [HAVE_CPP=yes], [HAVE_CPP=no])
-AC_CHECK_LIB(stdc++, main, [HAVE_STDCPP=yes], [HAVE_STDCPP=no])
+if test "x$HAVE_CXX20" = "xyes"; then
+	MLT_CXX="$CXX -x c++"
+	CC="$MLT_CXX"
 
-if test "x$HAVE_CPP" = "xyes"; then
-	MLT_LDFLAGS="-lc++"
-elif test "x$HAVE_STDCPP" = "xyes"; then
-	MLT_LDFLAGS="-lstdc++"
+	AC_CHECK_LIB(c++, main, [HAVE_CPP=yes], [HAVE_CPP=no])
+	AC_CHECK_LIB(stdc++, main, [HAVE_STDCPP=yes], [HAVE_STDCPP=no])
+
+	if test "x$HAVE_CPP" = "xyes"; then
+		MLT_LDFLAGS="-lc++"
+	elif test "x$HAVE_STDCPP" = "xyes"; then
+		MLT_LDFLAGS="-lstdc++"
+	else
+		MLT_LDFLAGS=""
+	fi
+
+	HAVE_MLT=yes
+	MLT_LIB=libmlt.la
+	AC_DEFINE([HAVE_LIBMLT], [1], [Define to 1 if MLT encoder is being built])
 else
-	AC_MSG_WARN("Could not find a C++ standard library")
-	MLT_LDFLAGS=""
+	AC_MSG_WARN([C++20 support not available, MLT encoding disabled])
 fi
 
 CXX="$CXX_SAVE"
@@ -1949,14 +1980,15 @@ CPPFLAGS="$CPPFLAGS_SAVE"
 LDFLAGS="$LDFLAGS_SAVE"
 LIBS="$LIBS_SAVE"
 
-HAVE_MLT=yes
-AC_DEFINE([HAVE_LIBMLT], [1], [Define to 1 if MLT encoder is being built])
 AC_SUBST([HAVE_MLT])
+AC_SUBST([MLT_LIB])
 AC_SUBST([MLT_CXX])
 AC_SUBST([MLT_LDFLAGS])
 
-DEPS_MAKEFILE_LIST="$DEPS_MAKEFILE_LIST
+if test "x$HAVE_MLT" = "xyes"; then
+	DEPS_MAKEFILE_LIST="$DEPS_MAKEFILE_LIST
 		deps/mlt/Makefile"
+fi
 
 
 dnl ===========================================================================
@@ -2038,6 +2070,8 @@ if test "x$HAVE_WAGYU" = "xyes"; then
 fi
 if test "x$HAVE_FLATGEOBUF" = "xyes"; then
     AC_MSG_RESULT([  C++ compiler (FlatGeobuf): ${FLATGEOBUF_CXX} ${CXXFLAGS}])
+fi
+if test "x$HAVE_MLT" = "xyes"; then
     AC_MSG_RESULT([  C++ compiler (MLT): ${MLT_CXX} ${CXXFLAGS}])
 fi
 AC_MSG_RESULT([  CPPFLAGS:             $CPPFLAGS])
@@ -2082,6 +2116,8 @@ AC_MSG_RESULT([  protobuf support:     ${HAVE_PROTOBUF}])
 if test "x$HAVE_PROTOBUF" = "xyes"; then
   AC_MSG_RESULT([  protobuf-c version:   ${PROTOC_VERSION}])
 fi
+
+AC_MSG_RESULT([  MLT support:          ${HAVE_MLT}])
 
 AC_MSG_RESULT([  PCRE support:         ${PCRE_SUPPORT}])
 AC_MSG_RESULT([  Perl:                 ${PERL}])

@@ -27,7 +27,7 @@ top_srcdir = ../..
 srcdir = .
 libdir = ${exec_prefix}/lib
 
-CXX = clang -std=c++17 -x c++
+CXX = clang -x c++
 CXXFLAGS = -std=c++20 \
 	-I$(top_srcdir)/liblwgeom \
 	-I$(top_builddir)/liblwgeom \
@@ -74,9 +74,15 @@ vendor/mlt-vendor/fsst/%.o: vendor/mlt-vendor/fsst/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -std=c++17 -c -o $@ $<
 
+UNAME_M := $(shell uname -m)
+FASTPFOR_FLAGS =
+ifeq ($(UNAME_M),x86_64)
+FASTPFOR_FLAGS = -msse4.1
+endif
+
 vendor/mlt-vendor/fastpfor/src/%.o: vendor/mlt-vendor/fastpfor/src/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(FASTPFOR_FLAGS) -c -o $@ $<
 
 ../../liblwgeom/liblwgeom.h:
 	$(MAKE) -C ../../liblwgeom liblwgeom.h
